@@ -1,0 +1,73 @@
+.lg-wrap { margin: 0.5em 0; }
+.lg-scroll { overflow-x: auto; }
+.lg-svg { display: block; max-width: 100%; height: auto; }
+
+.lg-wire { fill: none; stroke: var(--text-faint); stroke-width: 2; stroke-linejoin: round; }
+.lg-wire.on { stroke: var(--interactive-accent); }
+.lg-dot { fill: var(--text-faint); }
+.lg-dot.on { fill: var(--interactive-accent); }
+
+.lg-gate { fill: var(--background-secondary); stroke: var(--text-normal); stroke-width: 2; }
+.lg-gate-extra { fill: none; stroke: var(--text-normal); stroke-width: 2; }
+.lg-bubble { fill: var(--background-primary); stroke: var(--text-normal); stroke-width: 2; }
+
+.lg-label { fill: var(--text-normal); font-size: 13px; font-family: var(--font-monospace); }
+.lg-muted { fill: var(--text-muted); font-size: 10px; font-family: var(--font-monospace); }
+
+.lg-box { fill: var(--background-primary); stroke: var(--text-muted); stroke-width: 1.5; }
+.lg-box.in { cursor: pointer; }
+.lg-box.in:hover { stroke: var(--interactive-accent); }
+.lg-box.on { fill: var(--interactive-accent); stroke: var(--interactive-accent); }
+.lg-boxtext { fill: var(--text-normal); font-size: 12px; font-family: var(--font-monospace); pointer-events: none; }
+.lg-boxtext.on { fill: var(--text-on-accent); }
+
+.lg-table { margin-top: 0.8em; width: auto; font-family: var(--font-monospace); }
+.lg-table th, .lg-table td { text-align: center; padding: 2px 12px; }
+.lg-table th.lg-mid, .lg-table td.lg-mid { color: var(--text-muted); }
+.lg-table th.lg-sep, .lg-table td.lg-sep { border-left: 2px solid var(--background-modifier-border); }
+.lg-table tbody tr { cursor: pointer; }
+.lg-table tbody tr:hover td { background: var(--background-modifier-hover); }
+.lg-table tbody tr.lg-active td { background: var(--background-modifier-active-hover); font-weight: 600; }
+
+.lg-error {
+  color: var(--text-error);
+  border: 1px solid var(--text-error);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: var(--font-monospace);
+  font-size: 0.9em;
+}
+
+.lg-expr { margin-top: 0.8em; }
+.lg-expr-row { margin: 2px 0; }
+.lg-expr-tag { color: var(--text-muted); font-size: 0.8em; margin-left: 0.5em; }
+.lg-actions { margin-top: 0.8em; display: flex; flex-wrap: wrap; gap: 6px; }
+.lg-actions button { font-size: 0.8em; padding: 2px 10px; height: auto; }
+
+/* ── v0.2 additions ── */
+.lg-diagram + .lg-diagram, .lg-timing, .lg-kmap-wrap { margin-top: 1em; }
+.lg-title { font-weight: 600; font-size: 0.85em; color: var(--text-muted); margin: 0.4em 0 0.2em; }
+.lg-note { color: var(--text-muted); font-size: 0.85em; margin: 0.4em 0; font-style: italic; }
+.lg-muted-text { color: var(--text-muted); font-size: 0.8em; font-family: var(--font-monospace); }
+.lg-small { font-size: 0.75em; padding: 0 8px; height: auto; margin-left: 6px; }
+
+.lg-grid { stroke: var(--background-modifier-border); stroke-width: 1; }
+.lg-wave { fill: none; stroke: var(--text-muted); stroke-width: 1.6; }
+.lg-wave.in { stroke: var(--text-normal); }
+.lg-wave.out { stroke: var(--interactive-accent); stroke-width: 2.2; }
+
+.lg-kmaps { display: flex; flex-wrap: wrap; gap: 14px; }
+.lg-kmap { border-collapse: collapse; font-family: var(--font-monospace); width: auto; }
+.lg-kmap th { color: var(--text-muted); font-weight: 500; font-size: 0.8em; padding: 2px 8px; border: none; }
+.lg-kmap th.lg-corner { font-size: 0.7em; }
+.lg-kmap td { width: 34px; height: 30px; text-align: center; border: 1px solid var(--background-modifier-border); color: var(--text-muted); }
+.lg-kmap td.lg-k1 { color: var(--text-normal); font-weight: 700; }
+.lg-g0 { background: rgba(var(--color-red-rgb, 230, 80, 80), 0.28); }
+.lg-g1 { background: rgba(var(--color-blue-rgb, 70, 130, 230), 0.28); }
+.lg-g2 { background: rgba(var(--color-green-rgb, 70, 180, 100), 0.28); }
+.lg-g3 { background: rgba(var(--color-orange-rgb, 240, 150, 50), 0.30); }
+.lg-g4 { background: rgba(var(--color-purple-rgb, 160, 100, 220), 0.28); }
+.lg-g5 { background: rgba(var(--color-cyan-rgb, 60, 190, 200), 0.30); }
+.lg-legend { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 14px; }
+.lg-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.lg-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--background-modifier-border); }

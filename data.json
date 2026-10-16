@@ -1,0 +1,17 @@
+{
+  "maxInputs": 20,
+  "maxGates": 64,
+  "showTable": true,
+  "showExpr": true,
+  "showKmap": false,
+  "collapseDontCare": false,
+  "delayEnabled": false,
+  "delaySeconds": 1,
+  "bubblePushing": false,
+  "expSimplify": false,
+  "simplifyMethod": "sop",
+  "hSpacing": "90",
+  "vSpacing": 16,
+  "apiKey": "",
+  "model": "claude-sonnet-5-5"
+}
