@@ -4,7 +4,7 @@
 - Automatic division into simple formulas with steps named 
 	- Add lang in setting and a json with the texts to pull for each lang
 		- ita, eng, ger, fra, ...
-- ...
+
 - Publicate plugin
 	- https://docs.obsidian.md/plugins/releasing/submit-plugin
 	- add a ko-fi/buy-me-a-coffee
