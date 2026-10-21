@@ -1,0 +1,14 @@
+{
+  "and": "(a,b) AND (y)",
+  "nand": "(a,b) NAND (y)",
+  "not": "(a) NOT (y)",
+  "xor": "(a,b) XOR (y)",
+  "xnor": "(a,b) XNOR (y)",
+  "nor3": "(a,b,c) NOR (y)",
+  "chain": "(a,b) AND (c)\n(c,d) OR (y)",
+  "half": "(a,b) XOR (s)\n(a,b) AND (cout)",
+  "userex": "(a,b) AND (c)\n(c,b) XOR (d)\n(d) NOT (y)",
+  "nandnand": "(a,b) NAND (p)\n(c,d) NAND (q)\n(p,q) NAND (y)",
+  "mux": "(s) NOT (ns)\n(a,ns) AND (x)\n(b,s) AND (z)\n(x,z) OR (y)",
+  "full": "(a,b) XOR (t)\n(t,cin) XOR (sum)\n(a,b) AND (x)\n(t,cin) AND (z)\n(x,z) OR (cout)"
+}

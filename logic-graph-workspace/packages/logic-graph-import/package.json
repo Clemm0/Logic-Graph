@@ -1,0 +1,8 @@
+{
+  "name": "logic-graph-import",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Obsidian companion plugin: turns a picture of a logic circuit into a logic block, offline.",
+  "main": "src/main.js",
+  "obsidian": { "id": "logic-graph-import", "entry": "src/main.js" }
+}
