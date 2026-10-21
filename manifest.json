@@ -1,7 +1,7 @@
 {
   "id": "logic-graph",
   "name": "Logic Graph",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "minAppVersion": "1.4.0",
   "description": "Draw logic gate circuits and generate truth tables from a simple text code block.",
   "author": "Clemm0",
