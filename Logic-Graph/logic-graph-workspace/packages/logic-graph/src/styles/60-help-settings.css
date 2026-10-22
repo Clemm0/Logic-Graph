@@ -1,0 +1,14 @@
+/* @help */
+.lg-help { border: 1px solid var(--background-modifier-border); border-radius: 8px; padding: 8px 14px; background: var(--background-secondary); }
+.lg-help-title { font-weight: 700; font-size: 1.05em; margin-bottom: 4px; }
+.lg-help-sec { margin: 0.6em 0; }
+.lg-help-row { margin: 2px 0 2px 1em; font-size: 0.9em; }
+.lg-help-item { margin: 2px 0 2px 1em; font-size: 0.9em; }
+.lg-help-item > summary { cursor: pointer; }
+.lg-help-code { margin: 6px 0; font-size: 0.85em; }
+.lg-help-live { margin: 4px 0 8px; padding: 4px 8px; background: var(--background-primary); border-radius: 6px; }
+
+/* settings: greyed-out "under construction" zone */
+.lg-wip { opacity: 0.45; pointer-events: none; filter: grayscale(1); }
+.lg-wip-banner { color: var(--text-muted); font-style: italic; }
+.lg-import-zone { margin-bottom: 0.5em; }

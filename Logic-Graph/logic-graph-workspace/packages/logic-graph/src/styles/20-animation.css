@@ -1,0 +1,14 @@
+/* animation mode: lamps, working gates, travelling bits */
+.lg-lamp { stroke: var(--background-modifier-border); stroke-width: 1; }
+.lg-lamp.v1 { fill: #2ecc71; opacity: 0.55; }
+.lg-lamp.v0 { fill: #e74c3c; opacity: 0.55; }
+.lg-lamp.work { opacity: 1; animation: lg-pulse 0.7s ease-in-out infinite; }
+.lg-lamp.work.v0 { fill: #f39c12; }
+.lg-gate.w1 { stroke: #2ecc71; stroke-width: 3; filter: drop-shadow(0 0 4px #2ecc71); }
+.lg-gate.w0 { stroke: #f39c12; stroke-width: 3; filter: drop-shadow(0 0 4px #f39c12); }
+@keyframes lg-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
+.lg-lamp { transform-box: fill-box; transform-origin: center; }
+.lg-sprite circle { stroke: var(--background-primary); stroke-width: 1.5; }
+.lg-sprite.v1 circle { fill: var(--interactive-accent); }
+.lg-sprite.v0 circle { fill: var(--text-muted); }
+.lg-sprite text { fill: #fff; font-size: 9px; font-family: var(--font-monospace); font-weight: 700; pointer-events: none; }

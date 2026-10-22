@@ -1,0 +1,18 @@
+/* timing graph */
+.lg-grid { stroke: var(--background-modifier-border); stroke-width: 1; }
+.lg-wave { fill: none; stroke: var(--text-muted); stroke-width: 1.6; }
+.lg-wave.in { stroke: var(--text-normal); }
+.lg-wave.out { stroke: var(--interactive-accent); stroke-width: 2.2; }
+
+/* truth table */
+.lg-table { margin-top: 0.8em; width: auto; font-family: var(--font-monospace); }
+.lg-table th, .lg-table td { text-align: center; padding: 2px 12px; }
+.lg-table th.lg-mid, .lg-table td.lg-mid { color: var(--text-muted); }
+.lg-table th.lg-sep, .lg-table td.lg-sep { border-left: 2px solid var(--background-modifier-border); }
+.lg-table tbody tr { cursor: pointer; }
+.lg-table tbody tr:hover td { background: var(--background-modifier-hover); }
+.lg-table tbody tr.lg-active td { background: var(--background-modifier-active-hover); font-weight: 600; }
+
+/* expressions */
+.lg-expr-row { margin: 2px 0; }
+.lg-expr-tag { color: var(--text-muted); font-size: 0.8em; margin-left: 0.5em; }

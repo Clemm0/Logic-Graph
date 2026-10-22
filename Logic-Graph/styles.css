@@ -1,0 +1,109 @@
+/* Logic Graph 0.3 */
+.lg-wrap { margin: 0.5em 0; }
+.lg-scroll { overflow-x: auto; }
+.lg-svg { display: block; max-width: 100%; height: auto; }
+.lg-diagram + .lg-diagram, .lg-timing, .lg-kmap-wrap, .lg-expr, .lg-help { margin-top: 1em; }
+
+.lg-title { font-weight: 600; font-size: 0.85em; color: var(--text-muted); margin: 0.4em 0 0.2em; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+.lg-note { color: var(--text-muted); font-size: 0.85em; margin: 0.4em 0; font-style: italic; }
+.lg-muted-text { color: var(--text-muted); font-size: 0.8em; font-weight: 400; font-family: var(--font-monospace); }
+.lg-small { font-size: 0.75em; padding: 0 8px; height: auto; margin-left: 4px; }
+
+/* wires, gates, bubbles */
+.lg-wire { fill: none; stroke: var(--text-faint); stroke-width: 2; stroke-linejoin: round; }
+.lg-wire.on { stroke: var(--interactive-accent); }
+.lg-dot { fill: var(--text-faint); }
+.lg-dot.on { fill: var(--interactive-accent); }
+.lg-gate { fill: var(--background-secondary); stroke: var(--text-normal); stroke-width: 2; }
+.lg-gate.flip { cursor: pointer; }
+.lg-gate.flip:hover { stroke: var(--interactive-accent); }
+.lg-gate-extra { fill: none; stroke: var(--text-normal); stroke-width: 2; }
+.lg-bubble { fill: var(--background-primary); stroke: var(--text-normal); stroke-width: 2.2; }
+.lg-bubble.match { stroke: var(--interactive-accent); fill: var(--background-modifier-hover); }
+
+.lg-label { fill: var(--text-normal); font-size: 13px; font-family: var(--font-monospace); }
+.lg-muted { fill: var(--text-muted); font-size: 10px; font-family: var(--font-monospace); }
+.lg-box { fill: var(--background-primary); stroke: var(--text-muted); stroke-width: 1.5; }
+.lg-box.in { cursor: pointer; }
+.lg-box.in:hover { stroke: var(--interactive-accent); }
+.lg-box.on { fill: var(--interactive-accent); stroke: var(--interactive-accent); }
+.lg-boxtext { fill: var(--text-normal); font-size: 12px; font-family: var(--font-monospace); pointer-events: none; }
+.lg-boxtext.on { fill: var(--text-on-accent); }
+
+/* animation mode: lamps, working gates, travelling bits */
+.lg-lamp { stroke: var(--background-modifier-border); stroke-width: 1; }
+.lg-lamp.v1 { fill: #2ecc71; opacity: 0.55; }
+.lg-lamp.v0 { fill: #e74c3c; opacity: 0.55; }
+.lg-lamp.work { opacity: 1; animation: lg-pulse 0.7s ease-in-out infinite; }
+.lg-lamp.work.v0 { fill: #f39c12; }
+.lg-gate.w1 { stroke: #2ecc71; stroke-width: 3; filter: drop-shadow(0 0 4px #2ecc71); }
+.lg-gate.w0 { stroke: #f39c12; stroke-width: 3; filter: drop-shadow(0 0 4px #f39c12); }
+@keyframes lg-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
+.lg-lamp { transform-box: fill-box; transform-origin: center; }
+.lg-sprite circle { stroke: var(--background-primary); stroke-width: 1.5; }
+.lg-sprite.v1 circle { fill: var(--interactive-accent); }
+.lg-sprite.v0 circle { fill: var(--text-muted); }
+.lg-sprite text { fill: #fff; font-size: 9px; font-family: var(--font-monospace); font-weight: 700; pointer-events: none; }
+
+/* timing graph */
+.lg-grid { stroke: var(--background-modifier-border); stroke-width: 1; }
+.lg-wave { fill: none; stroke: var(--text-muted); stroke-width: 1.6; }
+.lg-wave.in { stroke: var(--text-normal); }
+.lg-wave.out { stroke: var(--interactive-accent); stroke-width: 2.2; }
+
+/* truth table */
+.lg-table { margin-top: 0.8em; width: auto; font-family: var(--font-monospace); }
+.lg-table th, .lg-table td { text-align: center; padding: 2px 12px; }
+.lg-table th.lg-mid, .lg-table td.lg-mid { color: var(--text-muted); }
+.lg-table th.lg-sep, .lg-table td.lg-sep { border-left: 2px solid var(--background-modifier-border); }
+.lg-table tbody tr { cursor: pointer; }
+.lg-table tbody tr:hover td { background: var(--background-modifier-hover); }
+.lg-table tbody tr.lg-active td { background: var(--background-modifier-active-hover); font-weight: 600; }
+
+/* expressions */
+.lg-expr-row { margin: 2px 0; }
+.lg-expr-tag { color: var(--text-muted); font-size: 0.8em; margin-left: 0.5em; }
+
+/* Karnaugh maps (SVG) */
+.lg-kmaps { display: flex; flex-wrap: wrap; gap: 14px; }
+.lg-kmap { max-width: none; }
+.lg-kline { stroke: var(--background-modifier-border); stroke-width: 1.2; }
+.lg-klabel { fill: var(--text-muted); font-size: 12px; font-family: var(--font-monospace); }
+.lg-kcode { fill: var(--text-muted); font-size: 12px; font-family: var(--font-monospace); }
+.lg-kcell { fill: var(--background-primary); stroke: var(--background-modifier-border); stroke-width: 1.2; cursor: pointer; }
+.lg-kcell:hover { fill: var(--background-modifier-hover); }
+.lg-kcell.lg-kactive { stroke: var(--interactive-accent); stroke-width: 3; }
+.lg-kval { fill: var(--text-faint); font-size: 15px; font-family: var(--font-monospace); pointer-events: none; }
+.lg-kval.one { fill: var(--text-normal); font-weight: 700; }
+.lg-kfill { fill-opacity: 0.13; pointer-events: none; }
+.lg-kgroup { fill: none; stroke-width: 2.4; stroke-linecap: round; pointer-events: none; }
+.lg-legend { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 14px; }
+.lg-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.lg-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--background-modifier-border); }
+
+/* buttons, errors */
+.lg-actions { margin-top: 0.8em; display: flex; flex-wrap: wrap; gap: 6px; }
+.lg-actions button { font-size: 0.8em; padding: 2px 10px; height: auto; }
+.lg-error {
+  color: var(--text-error);
+  border: 1px solid var(--text-error);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: var(--font-monospace);
+  font-size: 0.9em;
+}
+
+/* @help */
+.lg-help { border: 1px solid var(--background-modifier-border); border-radius: 8px; padding: 8px 14px; background: var(--background-secondary); }
+.lg-help-title { font-weight: 700; font-size: 1.05em; margin-bottom: 4px; }
+.lg-help-sec { margin: 0.6em 0; }
+.lg-help-row { margin: 2px 0 2px 1em; font-size: 0.9em; }
+.lg-help-item { margin: 2px 0 2px 1em; font-size: 0.9em; }
+.lg-help-item > summary { cursor: pointer; }
+.lg-help-code { margin: 6px 0; font-size: 0.85em; }
+.lg-help-live { margin: 4px 0 8px; padding: 4px 8px; background: var(--background-primary); border-radius: 6px; }
+
+/* settings: greyed-out "under construction" zone */
+.lg-wip { opacity: 0.45; pointer-events: none; filter: grayscale(1); }
+.lg-wip-banner { color: var(--text-muted); font-style: italic; }
+.lg-import-zone { margin-bottom: 0.5em; }

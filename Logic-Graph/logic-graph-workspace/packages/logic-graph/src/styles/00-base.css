@@ -1,0 +1,10 @@
+/* Logic Graph 0.3 */
+.lg-wrap { margin: 0.5em 0; }
+.lg-scroll { overflow-x: auto; }
+.lg-svg { display: block; max-width: 100%; height: auto; }
+.lg-diagram + .lg-diagram, .lg-timing, .lg-kmap-wrap, .lg-expr, .lg-help { margin-top: 1em; }
+
+.lg-title { font-weight: 600; font-size: 0.85em; color: var(--text-muted); margin: 0.4em 0 0.2em; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+.lg-note { color: var(--text-muted); font-size: 0.85em; margin: 0.4em 0; font-style: italic; }
+.lg-muted-text { color: var(--text-muted); font-size: 0.8em; font-weight: 400; font-family: var(--font-monospace); }
+.lg-small { font-size: 0.75em; padding: 0 8px; height: auto; margin-left: 4px; }

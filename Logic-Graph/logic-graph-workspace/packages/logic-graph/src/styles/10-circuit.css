@@ -1,0 +1,20 @@
+/* wires, gates, bubbles */
+.lg-wire { fill: none; stroke: var(--text-faint); stroke-width: 2; stroke-linejoin: round; }
+.lg-wire.on { stroke: var(--interactive-accent); }
+.lg-dot { fill: var(--text-faint); }
+.lg-dot.on { fill: var(--interactive-accent); }
+.lg-gate { fill: var(--background-secondary); stroke: var(--text-normal); stroke-width: 2; }
+.lg-gate.flip { cursor: pointer; }
+.lg-gate.flip:hover { stroke: var(--interactive-accent); }
+.lg-gate-extra { fill: none; stroke: var(--text-normal); stroke-width: 2; }
+.lg-bubble { fill: var(--background-primary); stroke: var(--text-normal); stroke-width: 2.2; }
+.lg-bubble.match { stroke: var(--interactive-accent); fill: var(--background-modifier-hover); }
+
+.lg-label { fill: var(--text-normal); font-size: 13px; font-family: var(--font-monospace); }
+.lg-muted { fill: var(--text-muted); font-size: 10px; font-family: var(--font-monospace); }
+.lg-box { fill: var(--background-primary); stroke: var(--text-muted); stroke-width: 1.5; }
+.lg-box.in { cursor: pointer; }
+.lg-box.in:hover { stroke: var(--interactive-accent); }
+.lg-box.on { fill: var(--interactive-accent); stroke: var(--interactive-accent); }
+.lg-boxtext { fill: var(--text-normal); font-size: 12px; font-family: var(--font-monospace); pointer-events: none; }
+.lg-boxtext.on { fill: var(--text-on-accent); }
