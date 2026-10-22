@@ -1,78 +1,63 @@
 # Logic Graph for Obsidian
 
-Draw logic circuits, truth tables, Karnaugh maps and timing from a plain-text code block.
+Draw logic circuits, truth tables, Karnaugh maps, and timing diagrams straight from a plain-text code block.
 
-````
 ```logic
 (a,b) AND (c)
 (c,b) XOR (d)
 (d) NOT (y)
+
 ```
-````
+
+![Circuit Example](assets/graph.png)
+![Circuit Example](assets/table.png)
 
 This repository holds two Obsidian plugins:
 
-| Package | Plugin id | What it is |
-|---|---|---|
-| [`packages/logic-graph`](packages/logic-graph) | `logic-graph` | The main plugin: parser, analysis, drawing, settings. |
-| [`packages/logic-graph-import`](packages/logic-graph-import) | `logic-graph-import` | Optional companion: turns a picture of a circuit into a block, offline. |
+| Package | Plugin ID | What it is |
+| --- | --- | --- |
+| [`Logic-Graph`](Logic-Graph) | `Logic-Graph` | The main plugin: parser, analysis, drawing, and settings. |
+| [`Logic-Graph-Import`](Logic-Graph-Import) | `Logic-Graph-Import` | Optional companion: turns a picture of a circuit into a block, completely offline. |
 
-Obsidian only loads a single `main.js` per plugin, so the source is split into small modules under `src/` and **bundled** into `dist/<id>/main.js` by `npm run build`. Never edit anything in `dist/`.
+## Installing the extension
 
-## Getting started
+1. Copy the folders in this repo into your `<vault>/.obsidian/plugins/<id>/`.
+2. Enable the plugins inside your Obsidian settings.
+*(Make sure to install both folders if you want to use the image import feature!)*
 
-```bash
-npm install
-npm run build          # -> dist/logic-graph/ and dist/logic-graph-import/
-npm test               # unit tests for both packages
-npm run lint           # eslint (also guards the architecture, see CONTRIBUTING.md)
-npm run check          # lint + test + build: run this before you push
-```
-
-### Developing against a real vault
-
-```bash
-VAULT=/path/to/your/vault npm run dev
-```
-
-Rebuilds on every save and copies `main.js`, `manifest.json` and `styles.css` into `<vault>/.obsidian/plugins/<id>/`. In Obsidian use the "Reload app without saving" command (or the Hot-Reload community plugin) to pick up changes.
-
-### Installing a build by hand
-
-Copy the three files of `dist/<id>/` into `<vault>/.obsidian/plugins/<id>/` and enable the plugin. Install both folders to use image import.
-
-## Repository layout
-
-```
-packages/
-  logic-graph/
-    manifest.json          plugin id and version (the single source of the version)
-    src/
-      main.js              plugin entry: settings, code-block processor, commands, api
-      templates.js         circuit templates + picker
-      core/                pure logic, no DOM, no Obsidian (see CONTRIBUTING.md)
-      ui/                  everything that draws
-      settings/            defaults, validation, settings page
-      styles/              CSS pieces, concatenated in file-name order into styles.css
-    tests/                 node:test suites (+ entry.js that re-exports every module)
-  logic-graph-import/
-    src/
-      main.js              the "Import circuit from image" command
-      import.js            decode image, pick local/cloud, validate
-      providers.js         cloud providers (under construction): token checks, error texts
-      vision/              the local recognizer (pure pixel logic)
-    tests/                 recognizer tests on PNG fixtures
-scripts/                   build.mjs, test.mjs
-tests/helpers/             fake "obsidian" module, jsdom setup, random circuits
-```
-
-## More
-
-- [CONTRIBUTING.md](CONTRIBUTING.md): architecture, conventions and recipes ("how do I add a gate / directive / setting / provider").
-- Users: add `@help` to a logic block for the in-app reference.
+---
 
 ## Known limits
 
-- Truth tables, Karnaugh maps and minimisation work up to 12 inputs (2^n rows); the diagram and simulation work up to 32 inputs and 256 gates.
-- The local image recognizer reads clean, high-contrast schematics with standard gate shapes. It does not read signal names, and it fails on 2 of 36 fixtures (complex circuits in dark theme; marked `todo` in the tests).
-- PNG export and the browser animation are exercised only with stubs in the tests, so check them in a real Obsidian after UI changes.
+* **Input & Gate Caps:**
+  * Truth tables, Karnaugh maps, and minimisation work up to 12 inputs ($2^n$ rows, this can create really big tables, since if there are just 10 inputs it's already 1024 rows!).
+  * The diagram rendering and simulation work up to 32 inputs and 256 gates.
+
+* **Image Import (Experimental):**
+  * Image import is still a bit buggy and sometimes fails to recognise certain gates.
+    * Right now, it handles simple circuits with about 80% accuracy. (The main problem right now are N-Gates, since they can get flipped for their counterpart, i.e. a NAND could become an AND and viceversa)
+    * I'm actively working on fixing reading errors by "training" it with tons of graph samples (everything from hand-drawn gates to photos taken in dim or super bright lighting).
+    * I'm also searching for dataset repos ranging from simple setups (max 16 items) all the way to heavy-duty circuits (up to the plugin cap of 32 inputs and 256 gates).
+      * If you know any PLEASE create an Issue on GitHub or a Ticket on Discord, since it could help a lot.
+      * If you want to send in logic graphs you've made (by hand or digitally), feel free to submit them! You'll get to see how the model parses your circuit, plus you'll get a shoutout in Contributors.md on the repo page featuring your name, your submitted graph, and the recognition results obtained!
+
+* **PNG & SVG Exporting:**
+  * Exporting works fine most of the time, but if a circuit gets too massive, it might stretch out sideways or end up a bit pixelated because the details are too tiny to fully render.
+  
+* **Markdown Table Exporting**
+  * Another known issue is that the Export Table in Markdown returns a broken table and I'm working on that too
+
+* **Timing Graph Bugs:**
+  * The animation in the timings sometimes shows 2 values on the line instead of one. Don't worry—it's just a visual glitch and won't affect how your circuit actually works!
+  * Quick heads-up: on timing graphs, if you select 2 or more different examples at once, the graph length sometimes keeps growing because it's expecting a specific value but gets a different one instead.
+
+---
+
+## How to report issues
+
+Got a bug or a feature request? Here are the best (and only at the moment) ways to reach me:
+
+* **The Git way:** Open an [Issue report on GitHub](https://github.com/Clemm0/Logic-Graph/issues).
+* **Direct message:** Catch me over on [Discord](https://discord.gg/2cJt5CBTKa).
+
+> If I fail to answer your problems with this plugin right away, I'm sorry! I'll reach out as soon as possible.
