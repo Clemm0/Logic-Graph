@@ -1,9 +1,0 @@
-{
-  "id": "logic-graph-import",
-  "name": "Logic Graph - Image Import",
-  "version": "0.1.0",
-  "minAppVersion": "1.4.0",
-  "description": "Companion for Logic Graph: turns a picture of a logic circuit into a logic block, fully offline.",
-  "author": "Clemm0",
-  "isDesktopOnly": false
-}
