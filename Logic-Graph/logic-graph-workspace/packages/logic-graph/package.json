@@ -1,8 +1,0 @@
-{
-  "name": "logic-graph",
-  "version": "0.3.0",
-  "private": true,
-  "description": "Obsidian plugin: logic circuits from a code block.",
-  "main": "src/main.js",
-  "obsidian": { "id": "logic-graph", "entry": "src/main.js", "styles": "src/styles" }
-}

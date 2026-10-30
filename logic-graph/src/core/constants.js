@@ -1,0 +1,10 @@
+var HARD_MAX_INPUTS = 32;
+var HARD_MAX_GATES = 256;
+var ANALYSIS_MAX_INPUTS = 12;
+var MAX_GATE_FANIN = 6;
+var ID_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
+var clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+var DEFAULT_MAX_INPUTS = 12;
+var DEFAULT_MAX_GATES = 64;
+var REDUCE_METHODS = ["structural", "best", "sop", "pos", "nand", "nor"];
+var TIMING_VIEWS = ["graph", "animation", "both"];
