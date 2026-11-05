@@ -1,4 +1,5 @@
-function createDiagram(c, parent, ctx) {
+// packages/logic-graph/src/ui/diagram.js
+export function createDiagram(c, parent, ctx) {
   const flips = /* @__PURE__ */ new Set();
   let reps = null, matched = /* @__PURE__ */ new Set();
   const computeReps = () => {
@@ -40,6 +41,7 @@ function createDiagram(c, parent, ctx) {
   const scroll = h("div", "lg-scroll", box);
   let hgap = ctx.hspacing.px || 90;
   let wires = [], dots = [], inBoxes = {}, outBoxes = {}, lamps = [], sprites = [], spriteLayer = null, raf = 0;
+  let disposed = false;
   function draw() {
     scroll.textContent = "";
     wires = [];
@@ -96,7 +98,7 @@ function createDiagram(c, parent, ctx) {
       s("text", { class: "lg-label", x: LEFT - 30, y: y + 4, "text-anchor": "end" }, gateLayer, n);
       const rect = s("rect", { class: "lg-box in", x: LEFT - 24, y: y - 10, width: 24, height: 20, rx: 4 }, gateLayer);
       const text = s("text", { class: "lg-boxtext", x: LEFT - 12, y: y + 4, "text-anchor": "middle" }, gateLayer, "0");
-      rect.addEventListener("click", () => ctx.onToggle(n));
+      clickable(rect, () => ctx.onToggle(n));
       inBoxes[n] = { rect, text };
     });
     c.order.forEach((g) => {
@@ -104,7 +106,7 @@ function createDiagram(c, parent, ctx) {
       const grp = s("g", { transform: `translate(${g.x0},${g.cy - g.H / 2})` }, gateLayer);
       const flippable = ctx.bubbles && !r.fixed;
       const body = s("path", { class: "lg-gate" + (flippable ? " flip" : ""), d: gatePath(r.shape, g.H) }, grp);
-      if (flippable) body.addEventListener("click", () => {
+      if (flippable) clickable(body, () => {
         if (flips.has(g)) flips.delete(g);
         else flips.add(g);
         computeReps();
@@ -132,6 +134,7 @@ function createDiagram(c, parent, ctx) {
     });
   }
   function paint() {
+    if (disposed) return;
     const v = sim.vals;
     wires.forEach((w) => w.el.classList.toggle("on", !!v[w.sig]));
     dots.forEach((d) => d.el.classList.toggle("on", !!v[d.sig]));
@@ -155,7 +158,7 @@ function createDiagram(c, parent, ctx) {
     });
   }
   function spawn(sig, v) {
-    if (!ctx.anim || !spriteLayer || typeof requestAnimationFrame !== "function") return;
+    if (!ctx.anim || !spriteLayer || typeof requestAnimationFrame !== "function" || disposed) return;
     wires.forEach((w) => {
       if (w.sig !== sig || sprites.length > 240) return;
       let len;
@@ -174,6 +177,7 @@ function createDiagram(c, parent, ctx) {
   }
   function step(now) {
     raf = 0;
+    if (disposed) return;
     for (let i = sprites.length - 1; i >= 0; i--) {
       const sp = sprites[i];
       const k = Math.min(1, Math.max(0, (now - sp.t0) / ANIM_MS));
@@ -188,20 +192,43 @@ function createDiagram(c, parent, ctx) {
   }
   draw();
   paint();
+  if (ctx.hspacing.pct) {
+    const target = scroll.clientWidth * ctx.hspacing.pct / 100;
+    if (target > 0) {
+      hgap = solveGap(c, ctx.vgap, target);
+      draw();
+      paint();
+    }
+  }
+  let ro = null;
   if (ctx.hspacing.pct && typeof ResizeObserver !== "undefined") {
     let lastW = 0, pending = false;
-    new ResizeObserver((entries) => {
+    ro = new ResizeObserver((entries) => {
+      if (disposed) return;
       const w = entries[0].contentRect.width;
       if (!w || Math.abs(w - lastW) < 2 || pending) return;
       lastW = w;
       pending = true;
       later(() => {
         pending = false;
+        if (disposed) return;
         hgap = solveGap(c, ctx.vgap, w * ctx.hspacing.pct / 100);
         draw();
         paint();
       });
-    }).observe(scroll);
+    });
+    ro.observe(scroll);
   }
-  return { sim, paint, getSvg: () => svgEl };
+  return {
+    sim,
+    paint,
+    getSvg: () => svgEl,
+    dispose() {
+      disposed = true;
+      sim.dispose();
+      if (raf) cancelAnimationFrame(raf);
+      if (ro) ro.disconnect();
+    }
+  };
 }
+

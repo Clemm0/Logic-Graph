@@ -1,11 +1,13 @@
-function evaluate(c, inputVals) {
+// packages/logic-graph/src/core/sim.js
+import { GATES } from "gates.js";
+export function evaluate(c, inputVals) {
   const v = Object.assign({}, inputVals);
   c.order.forEach((g) => {
     v[g.out] = +GATES[g.type].fn(g.ins.map((x) => !!v[x]));
   });
   return v;
 }
-function truthTable(c) {
+export function truthTable(c) {
   const n = c.inputs.length;
   const rows = [];
   for (let i = 0; i < 1 << n; i++) {
@@ -17,7 +19,7 @@ function truthTable(c) {
   }
   return rows;
 }
-function createSim(c, getDelay, onChange, onWork) {
+export function createSim(c, getDelay, onChange, onWork) {
   const zero = {};
   c.inputs.forEach((n) => {
     zero[n] = 0;
@@ -25,19 +27,21 @@ function createSim(c, getDelay, onChange, onWork) {
   const vals = evaluate(c, zero);
   const timers = /* @__PURE__ */ new Map();
   const consumers = {};
+  let disposed = false;
   c.gates.forEach((g) => g.ins.forEach((n) => {
     (consumers[n] = consumers[n] || []).push(g);
   }));
   const work = (g) => {
-    if (onWork) onWork(g);
+    if (!disposed && onWork) onWork(g);
   };
   function set(sig, v) {
-    if (vals[sig] === v) return;
+    if (disposed || vals[sig] === v) return;
     vals[sig] = v;
     onChange(sig, v);
     (consumers[sig] || []).forEach(reeval);
   }
   function reeval(g) {
+    if (disposed) return;
     const target = +GATES[g.type].fn(g.ins.map((x) => !!vals[x]));
     const pend = timers.get(g);
     if (pend) {
@@ -56,6 +60,7 @@ function createSim(c, getDelay, onChange, onWork) {
     }
     const h2 = setTimeout(() => {
       timers.delete(g);
+      if (disposed) return;
       set(g.out, target);
       work(g);
     }, d * 1e3);
@@ -75,8 +80,10 @@ function createSim(c, getDelay, onChange, onWork) {
       return p ? p.target : null;
     },
     dispose() {
+      disposed = true;
       timers.forEach((p) => clearTimeout(p.h));
       timers.clear();
     }
   };
 }
+

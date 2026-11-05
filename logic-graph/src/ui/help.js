@@ -1,5 +1,6 @@
-var HALF_ADDER = "(a,b) XOR (sum)\n(a,b) AND (carry)";
-var HELP = [
+// packages/logic-graph/src/ui/help.js
+export const HALF_ADDER = "(a,b) XOR (sum)\n(a,b) AND (carry)";
+export const HELP = [
   { title: "Gates", note: "One gate per line: (inputs) GATE (output). Up to 6 inputs per gate.", items: [
     ["AND", "Output is 1 only when every input is 1.", "(a,b) AND (y)"],
     ["OR", "Output is 1 when at least one input is 1.", "(a,b) OR (y)"],
@@ -50,7 +51,7 @@ var HELP = [
     ["Experimental", "Always draw a reduced circuit, and choose the method.", null]
   ] }
 ];
-function renderHelp(parent, plugin) {
+export function renderHelp(parent, plugin) {
   const zone = h("div", "lg-help", parent);
   h("div", "lg-help-title", zone, "Logic Graph reference");
   HELP.forEach((sec) => {
@@ -79,3 +80,4 @@ function renderHelp(parent, plugin) {
     });
   });
 }
+

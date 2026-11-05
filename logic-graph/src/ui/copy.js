@@ -1,6 +1,6 @@
-var import_obsidian = require("obsidian");
-
-function toLatexSource(exprs) {
+// packages/logic-graph/src/ui/copy.js
+import * as import_obsidian3 from "obsidian";
+export function toLatexSource(exprs) {
   return exprs.map((e) => {
     const lines = [];
     if (e.raw && e.raw !== e.min) lines.push(`$$${nm(e.name)} = ${e.raw}$$`);
@@ -8,7 +8,7 @@ function toLatexSource(exprs) {
     return lines.join("\n");
   }).join("\n");
 }
-function toMermaid(c) {
+export function toMermaid(c) {
   const id = {};
   c.inputs.forEach((n) => {
     id[n] = "in_" + n;
@@ -24,8 +24,9 @@ function toMermaid(c) {
   c.outputs.forEach((n) => out.push(`  ${id[n]} --> out_${n}`));
   return "```mermaid\n" + out.join("\n") + "\n```";
 }
-function copy(text) {
-  const done = () => new import_obsidian.Notice("Copied to clipboard");
+export function copy(text) {
+  const done = () => new import_obsidian3.Notice("Copied to clipboard");
   if (typeof navigator !== "undefined" && navigator.clipboard) navigator.clipboard.writeText(text).then(done);
   else done();
 }
+

@@ -6,58 +6,74 @@ Draw logic circuits, truth tables, Karnaugh maps, and timing diagrams straight f
 (a,b) AND (c)
 (c,b) XOR (d)
 (d) NOT (y)
-
 ```
 
 ![Circuit Example](assets/graph.png)
 ![Circuit Example](assets/table.png)
 
-This repository holds two Obsidian plugins:
+## Features
 
-| Package | Plugin ID | What it is |
-| --- | --- | --- |
-| [`Logic-Graph`](Logic-Graph) | `Logic-Graph` | The main plugin: parser, analysis, drawing, and settings. |
-| [`Logic-Graph-Import`](Logic-Graph-Import) | `Logic-Graph-Import` | Optional companion: turns a picture of a circuit into a block, completely offline. |
+- **Circuit diagrams** — AND, OR, NAND, NOR, XOR, XNOR, NOT, and BUF gates (2–6 inputs each), drawn as clean SVG with live signal state.
+- **Truth tables** — click a row to drive the circuit; rows update the diagram instantly.
+- **Karnaugh maps** — 2 to 6 inputs, with the Quine–McCluskey minimal cover and coloured groups (exact minimum when the search is small enough).
+- **Boolean expressions** — both the structural expression of your circuit and the simplified sum-of-products form, rendered as LaTeX.
+- **Timing diagrams** — optional per-gate delay; waveform view and/or animated bit-travelling view.
+- **Bubble pushing** — De Morgan symbol matching, with per-gate manual flips.
+- **Circuit reduction** — structural rewrites (double NOT, NOT-into-NAND/NOR, merged cascades, absorption, shared gates, buffers) and two-level methods (SOP, POS, NAND-NAND, NOR-NOR). Every reduced circuit is verified against the original before it is shown.
+- **Export** — copy the truth table as Markdown, the expressions as LaTeX, the circuit as Mermaid, or save the diagram as PNG/SVG into your vault.
+- **Templates** — half adder, full adder, multiplexer, decoder, majority, parity, XOR-from-NAND.
+- **`@help`** — drop `@help` into a block for a full in-app reference with live examples.
 
-## Installing the extension
+## The block syntax
 
-1. Copy the folders in this repo into your `<vault>/.obsidian/plugins/<id>/`.
-2. Enable the plugins inside your Obsidian settings.
-*(Make sure to install both folders if you want to use the image import feature!)*
+One gate per line: `(inputs) GATE (output)`.
 
----
+```logic
+(a,b) XOR (sum)
+(a,b) AND (carry)
+```
+
+Signals no gate drives are the inputs; signals nothing uses are the outputs. Names may contain letters, digits, and `_`. Comments start with `#` or `//`.
+
+Directives (at the top of a block):
+
+| Directive | Effect |
+| --- | --- |
+| `@help` | Show the reference above the circuit. |
+| `@hide table` / `@show kmap` | Toggle `table`, `expr`, `diagram`, `kmap`, `timing`. |
+| `@simplify structural` (or `@reduce`) | Draw a reduced circuit. Methods: `structural`, `best`, `sop`, `pos`, `nand`, `nor`, `off`. |
+| `@bubbles` | Bubble-pushing view; click a gate to flip it by hand. |
+| `@compact` | Merge truth-table rows that don't depend on some inputs (shown as `X`). |
+| `@delay 0.5` / `@delay random` / `@delay off` | Per-gate delay (0–30 s, or random 0–5 s). |
+| `@timing-graph` / `@timing-animation` / `@timing-both` | Delay on, with the chosen timing view. |
+
+## Companion extension: image import
+
+The separate **Logic Graph – Image Import** extension turns a picture of a circuit into a block, entirely on your device. Install both plugins to use it; this plugin works fully without it. See that extension's README for details.
+
+## Installing
+
+1. Copy both plugin folders into `<vault>/.obsidian/plugins/<id>/`.
+2. Enable them in **Settings → Community plugins**.
+
+(You only need the import extension if you want to import from images.)
 
 ## Known limits
 
-* **Input & Gate Caps:**
-  * Truth tables, Karnaugh maps, and minimisation work up to 12 inputs ($2^n$ rows, this can create really big tables, since if there are just 10 inputs it's already 1024 rows!).
-  * The diagram rendering and simulation work up to 32 inputs and 256 gates.
+- Truth tables, Karnaugh maps, and minimisation work up to **12 inputs** (2ⁿ rows).
+- Diagrams and simulation work up to **32 inputs** and **256 gates**.
+- Very large circuits may export to PNG with fine detail compressed; SVG export is exact.
+- Timing animation is illustrative; for very fast gate chains several sprites may overlap.
 
-* **Image Import (Experimental):**
-  * Image import is still a bit buggy and sometimes fails to recognise certain gates.
-    * Right now, it handles simple circuits with about 80% accuracy. (The main problem right now are N-Gates, since they can get flipped for their counterpart, i.e. a NAND could become an AND and viceversa)
-    * I'm actively working on fixing reading errors by "training" it with tons of graph samples (everything from hand-drawn gates to photos taken in dim or super bright lighting).
-    * I'm also searching for dataset repos ranging from simple setups (max 16 items) all the way to heavy-duty circuits (up to the plugin cap of 32 inputs and 256 gates).
-      * If you know any PLEASE create an Issue on GitHub or a Ticket on Discord, since it could help a lot.
-      * If you want to send in logic graphs you've made (by hand or digitally), feel free to submit them! You'll get to see how the model parses your circuit, plus you'll get a shoutout in Contributors.md on the repo page featuring your name, your submitted graph, and the recognition results obtained!
+## Reporting issues
 
-* **PNG & SVG Exporting:**
-  * Exporting works fine most of the time, but if a circuit gets too massive, it might stretch out sideways or end up a bit pixelated because the details are too tiny to fully render.
-  
-* **Markdown Table Exporting**
-  * Another known issue is that the Export Table in Markdown returns a broken table and I'm working on that too
+- GitHub: <https://github.com/Clemm0/Logic-Graph/issues>
+- Discord: <https://discord.gg/2cJt5CBTKa>
 
-* **Timing Graph Bugs:**
-  * The animation in the timings sometimes shows 2 values on the line instead of one. Don't worry—it's just a visual glitch and won't affect how your circuit actually works!
-  * Quick heads-up: on timing graphs, if you select 2 or more different examples at once, the graph length sometimes keeps growing because it's expecting a specific value but gets a different one instead.
+I'll respond as soon as I can.
 
----
+## Support me
 
-## How to report issues
+If Logic Graph saves you time, you can buy me a coffee or support the project on Patreon — it genuinely helps and keeps the plugin free for everyone.
 
-Got a bug or a feature request? Here are the best (and only at the moment) ways to reach me:
-
-* **The Git way:** Open an [Issue report on GitHub](https://github.com/Clemm0/Logic-Graph/issues).
-* **Direct message:** Catch me over on [Discord](https://discord.gg/2cJt5CBTKa).
-
-> If I fail to answer your problems with this plugin right away, I'm sorry! I'll reach out as soon as possible.
+- Ko-fi: <https://ko-fi.com/clemm0>

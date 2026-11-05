@@ -1,4 +1,7 @@
-var METHOD_LABEL = {
+// packages/logic-graph/src/core/synthesize.js
+import { MAX_GATE_FANIN } from "constants.js";
+import { BASE } from "gates.js";
+export const METHOD_LABEL = {
   structural: "Structural (rewrites your actual circuit)",
   best: "Best of all methods",
   sop: "AND-OR (sum of products)",
@@ -6,7 +9,7 @@ var METHOD_LABEL = {
   nand: "NAND-NAND",
   nor: "NOR-NOR"
 };
-function synthesize(c, all, method) {
+export function synthesize(c, all, method) {
   const names = /* @__PURE__ */ new Set([...c.inputs, ...c.gates.map((g) => g.out)]);
   const gensym = (base, numbered) => {
     if (!numbered && !names.has(base)) {
@@ -90,3 +93,4 @@ function synthesize(c, all, method) {
   });
   return { circuit: gates.length ? assemble(gates, c.inputs) : null, consts };
 }
+

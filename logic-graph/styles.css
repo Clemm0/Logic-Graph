@@ -1,4 +1,4 @@
-/* Logic Graph 0.3 */
+/* Logic Graph 0.4 */
 .lg-wrap { margin: 0.5em 0; }
 .lg-scroll { overflow-x: auto; }
 .lg-svg { display: block; max-width: 100%; height: auto; }
@@ -25,13 +25,19 @@
 .lg-muted { fill: var(--text-muted); font-size: 10px; font-family: var(--font-monospace); }
 .lg-box { fill: var(--background-primary); stroke: var(--text-muted); stroke-width: 1.5; }
 .lg-box.in { cursor: pointer; }
-.lg-box.in:hover { stroke: var(--interactive-accent); }
+.lg-box.in:hover, .lg-box.in:focus-visible { stroke: var(--interactive-accent); }
 .lg-box.on { fill: var(--interactive-accent); stroke: var(--interactive-accent); }
 .lg-boxtext { fill: var(--text-normal); font-size: 12px; font-family: var(--font-monospace); pointer-events: none; }
 .lg-boxtext.on { fill: var(--text-on-accent); }
 
+/* keyboard focus for clickable SVG bits */
+.lg-gate.flip:focus-visible, .lg-kcell:focus-visible, .lg-kcell.lg-kactive:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
+}
+
 /* animation mode: lamps, working gates, travelling bits */
-.lg-lamp { stroke: var(--background-modifier-border); stroke-width: 1; }
+.lg-lamp { stroke: var(--background-modifier-border); stroke-width: 1; transform-box: fill-box; transform-origin: center; }
 .lg-lamp.v1 { fill: #2ecc71; opacity: 0.55; }
 .lg-lamp.v0 { fill: #e74c3c; opacity: 0.55; }
 .lg-lamp.work { opacity: 1; animation: lg-pulse 0.7s ease-in-out infinite; }
@@ -39,7 +45,6 @@
 .lg-gate.w1 { stroke: #2ecc71; stroke-width: 3; filter: drop-shadow(0 0 4px #2ecc71); }
 .lg-gate.w0 { stroke: #f39c12; stroke-width: 3; filter: drop-shadow(0 0 4px #f39c12); }
 @keyframes lg-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
-.lg-lamp { transform-box: fill-box; transform-origin: center; }
 .lg-sprite circle { stroke: var(--background-primary); stroke-width: 1.5; }
 .lg-sprite.v1 circle { fill: var(--interactive-accent); }
 .lg-sprite.v0 circle { fill: var(--text-muted); }
@@ -102,8 +107,3 @@
 .lg-help-item > summary { cursor: pointer; }
 .lg-help-code { margin: 6px 0; font-size: 0.85em; }
 .lg-help-live { margin: 4px 0 8px; padding: 4px 8px; background: var(--background-primary); border-radius: 6px; }
-
-/* settings: greyed-out "under construction" zone */
-.lg-wip { opacity: 0.45; pointer-events: none; filter: grayscale(1); }
-.lg-wip-banner { color: var(--text-muted); font-style: italic; }
-.lg-import-zone { margin-bottom: 0.5em; }

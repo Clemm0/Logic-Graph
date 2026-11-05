@@ -1,9 +1,11 @@
-var LEFT = 90;
-var GATE_W = 64;
-var TOP = 34;
-var BUBBLE_R = 5.5;
-var ANIM_MS = 450;
-function gatePath(shape, H) {
+// packages/logic-graph/src/ui/layout.js
+import { clamp } from "../core/constants.js";
+export const LEFT = 90;
+export const GATE_W = 64;
+export const TOP = 34;
+export const BUBBLE_R = 5.5;
+export const ANIM_MS = 450;
+export function gatePath(shape, H) {
   const r = H / 2;
   switch (shape) {
     case "AND":
@@ -15,12 +17,12 @@ function gatePath(shape, H) {
       return `M0,0 L52,${r} L0,${H} Z`;
   }
 }
-var CH_FIRST = 18;
-var CH_STEP = 6;
-var CH_MARGIN = 14;
-var laneY = (lane) => 6 + 6 * lane;
-var channelNeed = (tracks) => CH_FIRST + CH_STEP * Math.max(0, tracks - 1) + CH_MARGIN;
-function layout(c, geo) {
+export const CH_FIRST = 18;
+export const CH_STEP = 6;
+export const CH_MARGIN = 14;
+export const laneY = (lane) => 6 + 6 * lane;
+export const channelNeed = (tracks) => CH_FIRST + CH_STEP * Math.max(0, tracks - 1) + CH_MARGIN;
+export function layout(c, geo) {
   const SP = 40 + geo.vgap, GAP = geo.vgap, T0 = TOP + (geo.topPad || 0);
   const level = {}, cy = {};
   c.inputs.forEach((n, i) => {
@@ -66,12 +68,12 @@ function layout(c, geo) {
   });
   return { cy, maxL, width: right, height: bottom + TOP };
 }
-function wireChannel(g, i, hgap) {
+export function wireChannel(g, i, hgap) {
   const n = g.ins.length, avail = Math.max(10, hgap - 6), first = Math.min(20, avail / 2);
   const step = n > 1 ? Math.min(7, (avail - first) / (n - 1)) : 0;
   return g.x0 - first - step * i;
 }
-function planRoutes(c, L, hgap) {
+export function planRoutes(c, L, hgap) {
   const boxes = c.order.map((g) => ({ g, x0: g.x0 - 2, x1: g.x0 + GATE_W + 2, y0: g.cy - g.H / 2 - 14, y1: g.cy + g.H / 2 + 16 }));
   const routes = /* @__PURE__ */ new Map();
   let lanes = 0;
@@ -85,7 +87,7 @@ function planRoutes(c, L, hgap) {
   }));
   return { routes, lanes: Math.min(lanes, 5) };
 }
-function planChannels(c, L, plan) {
+export function planChannels(c, L, plan) {
   const byLevel = /* @__PURE__ */ new Map();
   c.order.forEach((g) => {
     if (!byLevel.has(g.level)) byLevel.set(g.level, []);
@@ -123,8 +125,9 @@ function planChannels(c, L, plan) {
   }
   return { trackOf, tracks, nets };
 }
-function solveGap(c, vgap, targetW) {
+export function solveGap(c, vgap, targetW) {
   const L0 = layout(c, { hgap: 90, vgap });
   if (L0.maxL < 2) return 90;
   return clamp(90 + (targetW - L0.width) / (L0.maxL - 1), 40, 1e3);
 }
+

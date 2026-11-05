@@ -1,4 +1,5 @@
-var GATES = {
+// packages/logic-graph/src/core/gates.js
+export const GATES = {
   AND: { min: 2, shape: "AND", inv: false, fn: (v) => v.every((x) => x) },
   NAND: { min: 2, shape: "AND", inv: true, fn: (v) => !v.every((x) => x) },
   OR: { min: 2, shape: "OR", inv: false, fn: (v) => v.some((x) => x) },
@@ -8,6 +9,7 @@ var GATES = {
   NOT: { min: 1, max: 1, shape: "BUF", inv: true, fn: (v) => !v[0] },
   BUF: { min: 1, max: 1, shape: "BUF", inv: false, fn: (v) => !!v[0] }
 };
-var INVERSE = { AND: "NAND", NAND: "AND", OR: "NOR", NOR: "OR", XOR: "XNOR", XNOR: "XOR" };
-var BASE = { AND: "AND", NAND: "AND", OR: "OR", NOR: "OR", XOR: "XOR", XNOR: "XOR" };
-var INVERTING = { NAND: 1, NOR: 1, XNOR: 1, NOT: 1 };
+export const INVERSE = { AND: "NAND", NAND: "AND", OR: "NOR", NOR: "OR", XOR: "XNOR", XNOR: "XOR" };
+export const BASE = { AND: "AND", NAND: "AND", OR: "OR", NOR: "OR", XOR: "XOR", XNOR: "XOR" };
+export const INVERTING = { NAND: 1, NOR: 1, XNOR: 1, NOT: 1 };
+

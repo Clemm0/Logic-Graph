@@ -1,10 +1,11 @@
-function createTiming(parent, signals, kinds, app) {
+// packages/logic-graph/src/ui/timing.js
+export function createTiming(parent, signals, kinds, app) {
   const box = h("div", "lg-timing", parent);
   const head = h("div", "lg-title", box);
   h("span", "", head, "Timing graph");
   const clearBtn = h("button", "lg-small", head, "clear");
   const host = h("div", "lg-scroll", box);
-  let t0 = performance.now(), last = 0, hist = {}, queued = false, svgEl = null;
+  let t0 = performance.now(), last = 0, hist = {}, queued = false, svgEl = null, disposed = false;
   let lastVals = () => ({});
   addExportButton(head, app, () => svgEl, "timing-graph");
   const schedule = () => {
@@ -12,11 +13,12 @@ function createTiming(parent, signals, kinds, app) {
       queued = true;
       later(() => {
         queued = false;
-        draw();
+        if (!disposed) draw();
       });
     }
   };
   function begin(vals) {
+    if (disposed) return;
     t0 = performance.now();
     last = 0;
     hist = {};
@@ -26,13 +28,16 @@ function createTiming(parent, signals, kinds, app) {
     schedule();
   }
   function record(sig, v) {
-    if (!hist[sig]) return;
+    if (disposed || !hist[sig]) return;
+    const h2 = hist[sig];
+    if (h2.length && h2[h2.length - 1][1] === v) return;
     const t = (performance.now() - t0) / 1e3;
-    hist[sig].push([t, v]);
+    h2.push([t, v]);
     last = Math.max(last, t);
     schedule();
   }
   function draw() {
+    if (disposed) return;
     host.textContent = "";
     const W = 640, LBL = 84, RH = 22, PAD = 10;
     const T = Math.max(1, last * 1.1 + 0.2);
@@ -49,7 +54,13 @@ function createTiming(parent, signals, kinds, app) {
       const top = 6 + i * RH + 3, bot = 6 + i * RH + RH - 5;
       const y = (v) => v ? top : bot;
       s("text", { class: "lg-label", x: LBL - 8, y: bot, "text-anchor": "end" }, svg, n);
-      const pts = hist[n] || [];
+      const pts = [];
+      for (const [t, v] of hist[n] || []) {
+        const prev = pts[pts.length - 1];
+        if (prev && prev[0] === t && prev[1] === v) continue;
+        if (prev && prev[0] === t) prev[1] = v;
+        else pts.push([t, v]);
+      }
       if (!pts.length) return;
       let d = `M${x(pts[0][0])},${y(pts[0][1])}`;
       for (let k = 1; k < pts.length; k++) d += ` H${x(pts[k][0])} V${y(pts[k][1])}`;
@@ -58,7 +69,15 @@ function createTiming(parent, signals, kinds, app) {
     });
   }
   clearBtn.addEventListener("click", () => begin(lastVals()));
-  return { begin, record, setLastVals(fn) {
-    lastVals = fn;
-  } };
+  return {
+    begin,
+    record,
+    setLastVals(fn) {
+      lastVals = fn;
+    },
+    dispose() {
+      disposed = true;
+    }
+  };
 }
+

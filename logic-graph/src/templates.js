@@ -1,6 +1,6 @@
-var import_obsidian = require("obsidian");
-
-var TEMPLATES = [
+// packages/logic-graph/src/templates.js
+import * as import_obsidian2 from "obsidian";
+export const TEMPLATES = [
   { name: "Blank (two-input AND)", code: "(a,b) AND (y)" },
   { name: "Half adder", code: "(a,b) XOR (sum)\n(a,b) AND (carry)" },
   { name: "Full adder", code: "(a,b) XOR (t)\n(t,cin) XOR (sum)\n(a,b) AND (x)\n(t,cin) AND (z)\n(x,z) OR (cout)" },
@@ -10,8 +10,8 @@ var TEMPLATES = [
   { name: "4-bit parity (XOR tree)", code: "(a,b) XOR (p1)\n(c,d) XOR (p2)\n(p1,p2) XOR (parity)" },
   { name: "XOR from NAND gates", code: "(a,b) NAND (n1)\n(a,n1) NAND (n2)\n(b,n1) NAND (n3)\n(n2,n3) NAND (y)" }
 ];
-var fence = (code) => "```logic\n" + code + "\n```\n";
-var TemplateModal = class extends import_obsidian.FuzzySuggestModal {
+export const fence = (code) => "```logic\n" + code + "\n```\n";
+export const TemplateModal = class extends import_obsidian2.FuzzySuggestModal {
   constructor(app, onPick) {
     super(app);
     this.onPick = onPick;
@@ -27,3 +27,4 @@ var TemplateModal = class extends import_obsidian.FuzzySuggestModal {
     this.onPick(t);
   }
 };
+

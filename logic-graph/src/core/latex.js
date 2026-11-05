@@ -1,5 +1,6 @@
-var nm = (n) => /^[A-Za-z]$/.test(n) ? n : `\\mathrm{${n.replace(/_/g, "\\_")}}`;
-function rawLatex(c, sig) {
+// packages/logic-graph/src/core/latex.js
+export const nm = (n) => /^[A-Za-z]$/.test(n) ? n : `\\mathrm{${n.replace(/_/g, "\\_")}}`;
+export function rawLatex(c, sig) {
   const memo = /* @__PURE__ */ new Map();
   const go = (x) => {
     if (memo.has(x)) return memo.get(x);
@@ -42,3 +43,4 @@ function rawLatex(c, sig) {
   };
   return go(sig).s;
 }
+

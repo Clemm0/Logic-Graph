@@ -1,4 +1,5 @@
-function renderTable(parent, c, all, compact) {
+// packages/logic-graph/src/ui/table.js
+export function renderTable(parent, c, all, compact) {
   const n = c.inputs.length;
   const table = h("table", "lg-table", parent);
   const head = h("tr", "", h("thead", "", table));
@@ -45,7 +46,10 @@ function renderTable(parent, c, all, compact) {
     }
   };
 }
-function tableToMarkdown(colNames, cellRows) {
-  const row = (cells) => "| " + cells.join(" | ") + " |";
-  return [row(colNames), row(colNames.map(() => "---")), ...cellRows.map(row)].join("\n");
+export function tableToMarkdown(colNames, cellRows) {
+  const esc = (s2) => String(s2).replace(/\|/g, "\\|");
+  const row = (cells) => "| " + cells.map(esc).join(" | ") + " |";
+  const sep = "| " + colNames.map(() => ":-:").join(" | ") + " |";
+  return [row(colNames), sep, ...cellRows.map(row)].join("\n");
 }
+

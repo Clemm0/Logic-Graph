@@ -1,30 +1,12 @@
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+// packages/logic-graph/src/main.js
+import { GATES } from "core/gates.js";
+import { Plugin } from "obsidian";
+const import_obsidian7 = { Plugin };
+var LogicGraphPlugin = class extends import_obsidian7.Plugin {
+  constructor() {
+    super(...arguments);
+    this.liveBlocks = /* @__PURE__ */ new Set();
   }
-  return to;
-};
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-
-var main_exports = {};
-__export(main_exports, {
-  default: () => LogicGraphPlugin
-});
-module.exports = __toCommonJS(main_exports);
-
-var import_obsidian = require("obsidian");
-
-var LogicGraphPlugin = class extends import_obsidian.Plugin {
   async onload() {
     await this.loadSettings();
     this.addSettingTab(new LogicGraphSettingTab(this.app, this));
@@ -35,7 +17,22 @@ var LogicGraphPlugin = class extends import_obsidian.Plugin {
       providers: PROVIDERS,
       fence
     };
-    ["logic", "Logic", "logic-graph"].forEach((lang) => this.registerMarkdownCodeBlockProcessor(lang, (source, el) => renderBlock(source, el, this)));
+    ["logic", "Logic", "logic-graph"].forEach((lang) => this.registerMarkdownCodeBlockProcessor(lang, (source, el) => {
+      const handle = renderBlock(source, el, this);
+      if (handle && handle.dispose) this.liveBlocks.add(handle);
+      if (typeof MutationObserver !== "undefined") {
+        const mo = new MutationObserver(() => {
+          if (!el.isConnected) {
+            mo.disconnect();
+            if (handle && handle.dispose) {
+              handle.dispose();
+              this.liveBlocks.delete(handle);
+            }
+          }
+        });
+        mo.observe(document.body, { childList: true, subtree: true });
+      }
+    }));
     this.addCommand({
       id: "insert-block",
       name: "Insert logic block",
@@ -76,6 +73,21 @@ var LogicGraphPlugin = class extends import_obsidian.Plugin {
       });
     });
   }
+  onunload() {
+    this.liveBlocks.forEach((b) => {
+      if (b.dispose) b.dispose();
+    });
+    this.liveBlocks.clear();
+  }
+  refreshAll() {
+    this.app.workspace.getLeavesOfType("markdown").forEach((leaf) => {
+      const view = leaf.view;
+      if (!view) return;
+      if (view.previewMode && typeof view.previewMode.rerender === "function") {
+        view.previewMode.rerender(true);
+      }
+    });
+  }
   async loadSettings() {
     this.settings = sanitizeSettings(await this.loadData());
   }
@@ -84,3 +96,4 @@ var LogicGraphPlugin = class extends import_obsidian.Plugin {
     await this.saveData(this.settings);
   }
 };
+export default LogicGraphPlugin;

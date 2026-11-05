@@ -1,14 +1,16 @@
-var DUAL_SHAPE = { AND: "OR", OR: "AND", BUF: "BUF", XOR: "XOR" };
-var baseRep = (g) => {
+// packages/logic-graph/src/core/bubbles.js
+import { GATES } from "gates.js";
+export const DUAL_SHAPE = { AND: "OR", OR: "AND", BUF: "BUF", XOR: "XOR" };
+export const baseRep = (g) => {
   const sp = GATES[g.type];
   return { shape: sp.shape, out: +sp.inv, ins: g.ins.map(() => 0), fixed: sp.shape === "XOR" };
 };
-var flipRep = (r) => {
+export const flipRep = (r) => {
   r.shape = DUAL_SHAPE[r.shape];
   r.out ^= 1;
   r.ins = r.ins.map((b) => b ^ 1);
 };
-function bubbleForms(c, flips) {
+export function bubbleForms(c, flips) {
   const reps = /* @__PURE__ */ new Map();
   c.gates.forEach((g) => reps.set(g, baseRep(g)));
   const cons = {};
@@ -32,7 +34,7 @@ function bubbleForms(c, flips) {
   });
   return reps;
 }
-function matchedBubbleNets(c, reps) {
+export function matchedBubbleNets(c, reps) {
   const matched = /* @__PURE__ */ new Set();
   c.gates.forEach((d) => {
     if (!reps.get(d).out) return;
@@ -46,3 +48,4 @@ function matchedBubbleNets(c, reps) {
   });
   return matched;
 }
+

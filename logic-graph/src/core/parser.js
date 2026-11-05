@@ -1,3 +1,13 @@
+// packages/logic-graph/src/core/parser.js
+import { TIMING_VIEWS } from "constants.js";
+import { REDUCE_METHODS } from "constants.js";
+import { DEFAULT_MAX_GATES } from "constants.js";
+import { DEFAULT_MAX_INPUTS } from "constants.js";
+import { ID_RE } from "constants.js";
+import { MAX_GATE_FANIN } from "constants.js";
+import { HARD_MAX_GATES } from "constants.js";
+import { HARD_MAX_INPUTS } from "constants.js";
+import { GATES } from "gates.js";
 var PARTS = ["table", "expr", "diagram", "kmap", "timing"];
 var DIRECTIVE_LIST = "@help, @hide, @show, @simplify (@reduce), @bubbles, @compact, @delay, @timing-graph, @timing-animation, @timing-both";
 function applyDirective(line, n, o) {
@@ -57,7 +67,7 @@ function applyDirective(line, n, o) {
       throw new Error(`Line ${n}: unknown directive "@${name}". Available: ${DIRECTIVE_LIST}`);
   }
 }
-function assemble(gates, inputs) {
+export function assemble(gates, inputs) {
   const driver = {};
   gates.forEach((g) => {
     driver[g.out] = g;
@@ -88,7 +98,7 @@ function assemble(gates, inputs) {
   const middles = gates.map((g) => g.out).filter((x) => used.has(x));
   return { gates, order, inputs, outputs, middles, driver, used };
 }
-function parse(src, limits) {
+export function parse(src, limits) {
   limits = Object.assign({ maxInputs: DEFAULT_MAX_INPUTS, maxGates: DEFAULT_MAX_GATES }, limits);
   const gates = [];
   const driver = {};
@@ -136,3 +146,4 @@ function parse(src, limits) {
   c.opts = opts;
   return c;
 }
+

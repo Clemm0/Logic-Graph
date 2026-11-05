@@ -1,6 +1,7 @@
-var import_obsidian = require("obsidian");
-
-function renderBlock(src, el, plugin) {
+// packages/logic-graph/src/ui/block.js
+import { ANALYSIS_MAX_INPUTS } from "../core/constants.js";
+import * as import_obsidian6 from "obsidian";
+export function renderBlock(src, el, plugin) {
   const S = plugin.settings, app = plugin.app;
   const wrap = h("div", "lg-wrap", el);
   let c;
@@ -8,11 +9,11 @@ function renderBlock(src, el, plugin) {
     c = parse(src, { maxInputs: S.maxInputs, maxGates: S.maxGates });
   } catch (e) {
     h("div", "lg-error", wrap, e.message);
-    return;
+    return { dispose() {} };
   }
   const O = c.opts;
   if (O.help) renderHelp(wrap, plugin);
-  if (c.empty) return;
+  if (c.empty) return { dispose() {} };
   const part = (name, def) => O.hide.has(name) ? false : O.show.has(name) ? true : def;
   const analyzable = c.inputs.length <= ANALYSIS_MAX_INPUTS;
   const all = analyzable ? truthTable(c) : null;
@@ -118,12 +119,12 @@ function renderBlock(src, el, plugin) {
       }
     });
     if (!analyzable) h("div", "lg-note", box, `More than ${ANALYSIS_MAX_INPUTS} inputs: only the structural expression is shown.`);
-    if (typeof import_obsidian.finishRenderMath === "function") (0, import_obsidian.finishRenderMath)();
+    if (typeof import_obsidian6.finishRenderMath === "function") (0, import_obsidian6.finishRenderMath)();
   }
   if (analyzable && part("kmap", S.showKmap)) {
     const kb = h("div", "lg-kmap-wrap", wrap);
     kmaps = renderKmaps(kb, c, all, exprs, { app, onPick: pickIndex });
-    if (typeof import_obsidian.finishRenderMath === "function") (0, import_obsidian.finishRenderMath)();
+    if (typeof import_obsidian6.finishRenderMath === "function") (0, import_obsidian6.finishRenderMath)();
   }
   const showTable = part("table", S.showTable);
   if (analyzable && showTable) {
@@ -145,4 +146,11 @@ function renderBlock(src, el, plugin) {
   if (table) btn("Copy table (Markdown)", () => tableToMarkdown(table.colNames, table.rows.map((r) => r.cells)));
   if (analyzable) btn("Copy expressions (LaTeX)", () => toLatexSource(exprs));
   btn("Copy diagram (Mermaid)", () => toMermaid(c));
+  return {
+    dispose() {
+      diagrams.forEach((d) => d.dispose());
+      if (timing) timing.dispose();
+    }
+  };
 }
+

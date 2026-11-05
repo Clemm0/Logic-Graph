@@ -1,0 +1,11 @@
+// packages/logic-graph/manifest.json
+const manifest_default = {
+  id: "logic-graph",
+  name: "Logic Graph",
+  version: "0.4.0",
+  minAppVersion: "1.5.0",
+  description: "Draw logic gate circuits and generate truth tables from a simple text code block.",
+  author: "Clemm0",
+  isDesktopOnly: false
+};
+

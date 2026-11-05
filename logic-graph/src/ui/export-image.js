@@ -1,5 +1,5 @@
-var import_obsidian = require("obsidian");
-
+// packages/logic-graph/src/ui/export-image.js
+import * as import_obsidian5 from "obsidian";
 var STYLE_PROPS = [
   "fill",
   "fill-opacity",
@@ -15,7 +15,7 @@ var STYLE_PROPS = [
   "font-weight",
   "text-anchor"
 ];
-function svgSnapshot(svg) {
+export function svgSnapshot(svg) {
   const clone = svg.cloneNode(true);
   const src = [svg, ...svg.querySelectorAll("*")], dst = [clone, ...clone.querySelectorAll("*")];
   src.forEach((el, i) => {
@@ -41,7 +41,7 @@ function svgSnapshot(svg) {
   clone.setAttribute("height", vb[3]);
   return { text: new XMLSerializer().serializeToString(clone), width: vb[2], height: vb[3] };
 }
-async function svgToPng(snap, scale) {
+export async function svgToPng(snap, scale) {
   const url = URL.createObjectURL(new Blob([snap.text], { type: "image/svg+xml;charset=utf-8" }));
   try {
     const img = new Image();
@@ -59,7 +59,7 @@ async function svgToPng(snap, scale) {
     URL.revokeObjectURL(url);
   }
 }
-async function saveToVault(app, baseName, ext, buffer) {
+export async function saveToVault(app, baseName, ext, buffer) {
   const stamp = (/* @__PURE__ */ new Date()).toISOString().slice(0, 19).replace(/[:T]/g, "-");
   const filename = `${baseName}-${stamp}.${ext}`;
   let path = filename;
@@ -69,10 +69,10 @@ async function saveToVault(app, baseName, ext, buffer) {
     path = filename;
   }
   await app.vault.createBinary(path, buffer);
-  new import_obsidian.Notice(`Saved ${path}`);
+  new import_obsidian5.Notice(`Saved ${path}`);
 }
-function addExportButton(head, app, getSvg, baseName) {
-  if (!app || typeof import_obsidian.Menu === "undefined") return;
+export function addExportButton(head, app, getSvg, baseName) {
+  if (!app || typeof import_obsidian5.Menu === "undefined") return;
   const btn = h("button", "lg-small", head, "export");
   btn.addEventListener("click", (evt) => {
     const svg = getSvg();
@@ -81,10 +81,10 @@ function addExportButton(head, app, getSvg, baseName) {
       try {
         await fn(svgSnapshot(svg));
       } catch (e) {
-        new import_obsidian.Notice("Export failed: " + e.message);
+        new import_obsidian5.Notice("Export failed: " + e.message);
       }
     };
-    const menu = new import_obsidian.Menu();
+    const menu = new import_obsidian5.Menu();
     menu.addItem((i) => i.setTitle("Save as PNG").setIcon("image").onClick(run(async (snap) => {
       const blob = await svgToPng(snap, 2);
       await saveToVault(app, baseName, "png", await blob.arrayBuffer());
@@ -94,9 +94,14 @@ function addExportButton(head, app, getSvg, baseName) {
     })));
     menu.addItem((i) => i.setTitle("Copy PNG to clipboard").setIcon("copy").onClick(run(async (snap) => {
       const blob = await svgToPng(snap, 2);
+      if (typeof ClipboardItem === "undefined" || !navigator.clipboard || !navigator.clipboard.write) {
+        new import_obsidian5.Notice("Copying images to the clipboard is not supported on this device.");
+        return;
+      }
       await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-      new import_obsidian.Notice("Image copied");
+      new import_obsidian5.Notice("Image copied");
     })));
     menu.showAtMouseEvent(evt);
   });
 }
+

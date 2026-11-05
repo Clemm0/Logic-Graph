@@ -1,6 +1,7 @@
-var KGRAY = (k) => k === 0 ? [0] : k === 1 ? [0, 1] : [0, 1, 3, 2];
-var KCOLORS = ["#e5484d", "#3b82f6", "#30a46c", "#f5a524", "#8e4ec6", "#12a594"];
-function kmapArcs(cube, n, startVar, count) {
+// packages/logic-graph/src/ui/kmap.js
+export const KGRAY = (k) => k === 0 ? [0] : k === 1 ? [0, 1] : [0, 1, 3, 2];
+export const KCOLORS = ["#e5484d", "#3b82f6", "#30a46c", "#f5a524", "#8e4ec6", "#12a594"];
+export function kmapArcs(cube, n, startVar, count) {
   const size = 1 << count, g = KGRAY(count), pos = [];
   for (let p = 0; p < size; p++) {
     let ok = true;
@@ -29,7 +30,7 @@ function kmapArcs(cube, n, startVar, count) {
   }
   return runs.map((r) => ({ a: r[0], b: r[1], openA: false, openB: false }));
 }
-function outlinePath(x, y, w, hh, r, oL, oR, oT, oB) {
+export function outlinePath(x, y, w, hh, r, oL, oR, oT, oB) {
   const rTL = !oT && !oL ? r : 0, rTR = !oT && !oR ? r : 0, rBR = !oB && !oR ? r : 0, rBL = !oB && !oL ? r : 0;
   const d = [];
   if (!oT) d.push(`M${x + rTL},${y} L${x + w - rTR},${y}`);
@@ -42,7 +43,7 @@ function outlinePath(x, y, w, hh, r, oL, oR, oT, oB) {
   if (rTL) d.push(`M${x},${y + rTL} A${rTL},${rTL} 0 0 1 ${x + rTL},${y}`);
   return d.join(" ");
 }
-function kmapPieces(cube, n, gridVars, rowVars, colVars, extra, slice) {
+export function kmapPieces(cube, n, gridVars, rowVars, colVars, extra, slice) {
   for (let j = 0; j < extra; j++) {
     const bit = 1 << n - 1 - (gridVars + j);
     if (cube.mask & bit) continue;
@@ -62,7 +63,7 @@ function kmapPieces(cube, n, gridVars, rowVars, colVars, extra, slice) {
   })));
   return out;
 }
-function renderKmaps(parent, c, all, exprs, ctx) {
+export function renderKmaps(parent, c, all, exprs, ctx) {
   const n = c.inputs.length;
   if (n < 2 || n > 6) {
     h("div", "lg-note", parent, "Karnaugh maps are drawn for 2 to 6 inputs.");
@@ -109,7 +110,7 @@ function renderKmaps(parent, c, all, exprs, ctx) {
         const m = cellIndex(rg, cg, slice), val = all[m][e.name];
         const rect = s("rect", { class: "lg-kcell", x: LBLW + j * CW, y: HDRH + i * CH, width: CW, height: CH }, svg);
         s("text", { class: "lg-kval" + (val ? " one" : ""), x: LBLW + (j + 0.5) * CW, y: HDRH + (i + 0.5) * CH + 5, "text-anchor": "middle" }, svg, String(val));
-        rect.addEventListener("click", () => ctx.onPick(m));
+        clickable(rect, () => ctx.onPick(m));
         actives.push({ rect, m });
       }));
       e.cov.cover.forEach((cb, gi) => {
@@ -134,3 +135,4 @@ function renderKmaps(parent, c, all, exprs, ctx) {
     actives.forEach((a) => a.rect.classList.toggle("lg-kactive", a.m === idx));
   } };
 }
+

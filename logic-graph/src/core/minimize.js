@@ -1,4 +1,5 @@
-var popcount = (x) => {
+// packages/logic-graph/src/core/minimize.js
+export const popcount = (x) => {
   let k = 0;
   while (x) {
     k += x & 1;
@@ -6,7 +7,7 @@ var popcount = (x) => {
   }
   return k;
 };
-function primeImplicants(ones) {
+export function primeImplicants(ones) {
   let cur = new Map(ones.map((m) => [m + ":0", { v: m, mask: 0 }]));
   const primes = [];
   while (cur.size) {
@@ -36,7 +37,7 @@ function primeImplicants(ones) {
   }
   return primes;
 }
-function chooseCover(primes, ones, nvars) {
+export function chooseCover(primes, ones, nvars) {
   const NODE_LIMIT = 6e4;
   const covers = (p, m) => (m & ~p.mask) === p.v;
   const lits = (p) => nvars - popcount(p.mask);
@@ -111,20 +112,20 @@ function chooseCover(primes, ones, nvars) {
   rec(rest, []);
   return { cover: chosen.concat(bestSel).sort(byOrder), exact };
 }
-function coverOf(all, out, target) {
+export function coverOf(all, out, target) {
   const idx = [];
   let count1 = 0;
   all.forEach((r, i) => {
     if (r[out]) count1++;
     if (r[out] === (target === 0 ? 0 : 1)) idx.push(i);
   });
-  if (count1 === 0) return { const: 0 };
-  if (count1 === all.length) return { const: 1 };
+  if (count1 === 0) return { const: 0, exact: true };
+  if (count1 === all.length) return { const: 1, exact: true };
   const nvars = Math.round(Math.log2(all.length));
   const { cover, exact } = chooseCover(primeImplicants(idx), idx, nvars);
   return { ones: idx, cover, exact };
 }
-function cubeLiterals(c, cube) {
+export function cubeLiterals(c, cube) {
   const n = c.inputs.length, out = [];
   c.inputs.forEach((name, k) => {
     const bit = 1 << n - 1 - k;
@@ -132,10 +133,10 @@ function cubeLiterals(c, cube) {
   });
   return out;
 }
-var litLatex = (l) => l.neg ? `\\overline{${nm(l.name)}}` : nm(l.name);
-var cubeLatex = (c, cube) => cubeLiterals(c, cube).map(litLatex).join(" \\cdot ");
-var sopLatex = (c, cov) => cov.const !== void 0 ? String(cov.const) : cov.cover.map((cb) => cubeLatex(c, cb)).join(" + ");
-function buildExpressions(c, all) {
+export const litLatex = (l) => l.neg ? `\\overline{${nm(l.name)}}` : nm(l.name);
+export const cubeLatex = (c, cube) => cubeLiterals(c, cube).map(litLatex).join(" \\cdot ");
+export const sopLatex = (c, cov) => cov.const !== void 0 ? String(cov.const) : cov.cover.map((cb) => cubeLatex(c, cb)).join(" + ");
+export function buildExpressions(c, all) {
   return c.outputs.map((o) => {
     let raw;
     try {
@@ -152,3 +153,4 @@ function buildExpressions(c, all) {
     return { name: o, raw, min, cov };
   });
 }
+

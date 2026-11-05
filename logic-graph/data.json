@@ -7,11 +7,10 @@
   "collapseDontCare": false,
   "delayEnabled": false,
   "delaySeconds": 1,
+  "timingView": "graph",
   "bubblePushing": false,
   "expSimplify": false,
   "simplifyMethod": "sop",
   "hSpacing": "90",
-  "vSpacing": 16,
-  "apiKey": "",
-  "model": "claude-sonnet-5-5"
+  "vSpacing": 16
 }

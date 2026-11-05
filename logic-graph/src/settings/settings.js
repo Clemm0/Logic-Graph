@@ -1,4 +1,12 @@
-var DEFAULTS = {
+// packages/logic-graph/src/settings/settings.js
+import { TIMING_VIEWS } from "../core/constants.js";
+import { REDUCE_METHODS } from "../core/constants.js";
+import { DEFAULT_MAX_GATES } from "../core/constants.js";
+import { DEFAULT_MAX_INPUTS } from "../core/constants.js";
+import { clamp } from "../core/constants.js";
+import { HARD_MAX_GATES } from "../core/constants.js";
+import { HARD_MAX_INPUTS } from "../core/constants.js";
+export const DEFAULTS = {
   maxInputs: DEFAULT_MAX_INPUTS,
   maxGates: DEFAULT_MAX_GATES,
   showTable: true,
@@ -7,23 +15,17 @@ var DEFAULTS = {
   collapseDontCare: false,
   delayEnabled: false,
   delaySeconds: 1,
-  // -1 = random 0..5 s per gate
   timingView: "graph",
-  // graph | animation | both
   bubblePushing: false,
   expSimplify: false,
-  // experimental
   simplifyMethod: "structural",
-  // structural | best | sop | pos | nand | nor
   hSpacing: "90",
-  // "90" (px) or "100%" (spread over the page width)
   vSpacing: 16,
   importProvider: "local",
-  // used by the Image Import extension
   keys: { claude: "", gemini: "", grok: "", deepseek: "", openrouter: "" },
-  models: { claude: "claude-sonnet-5-5", gemini: "", grok: "", deepseek: "", openrouter: "" }
+  models: { claude: "claude-sonnet-4-5", gemini: "", grok: "", deepseek: "", openrouter: "" }
 };
-function sanitizeSettings(raw) {
+export function sanitizeSettings(raw) {
   const s2 = Object.assign({}, DEFAULTS, raw || {});
   s2.maxInputs = clamp(Math.round(Number(s2.maxInputs)) || DEFAULTS.maxInputs, 1, HARD_MAX_INPUTS);
   s2.maxGates = clamp(Math.round(Number(s2.maxGates)) || DEFAULTS.maxGates, 1, HARD_MAX_GATES);
@@ -43,9 +45,10 @@ function sanitizeSettings(raw) {
   if (!["local", "claude", "gemini", "grok", "deepseek", "openrouter"].includes(s2.importProvider)) s2.importProvider = "local";
   return s2;
 }
-function parseSpacing(str) {
+export function parseSpacing(str) {
   const m = String(str).trim().match(/^(\d+(?:\.\d+)?)\s*(%|px)?$/i);
   if (!m) return null;
   const v = parseFloat(m[1]);
   return m[2] === "%" ? { pct: clamp(v, 10, 400) } : { px: clamp(Math.round(v), 40, 1e3) };
 }
+

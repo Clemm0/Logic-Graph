@@ -1,4 +1,5 @@
-function compactRows(c, all) {
+// packages/logic-graph/src/core/compact.js
+export function compactRows(c, all) {
   const n = c.inputs.length;
   let cur = all.map((r, i) => ({ v: i, mask: 0, key: c.outputs.map((o) => r[o]).join("") }));
   let changed = true;
@@ -36,3 +37,4 @@ function compactRows(c, all) {
   }
   return cur.sort((a, b) => a.v - b.v || a.mask - b.mask);
 }
+

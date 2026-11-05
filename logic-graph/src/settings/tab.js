@@ -1,6 +1,7 @@
-var import_obsidian = require("obsidian");
-
-var LogicGraphSettingTab = class extends import_obsidian.PluginSettingTab {
+// packages/logic-graph/src/settings/tab.js
+import { Setting as _Setting, PluginSettingTab as _PluginSettingTab } from "obsidian";
+const import_obsidian = { Setting: _Setting, PluginSettingTab: _PluginSettingTab };
+export const LogicGraphSettingTab = class extends import_obsidian.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
     this.plugin = plugin;
@@ -11,6 +12,7 @@ var LogicGraphSettingTab = class extends import_obsidian.PluginSettingTab {
     containerEl.empty();
     const save = async () => {
       await P.saveSettings();
+      P.refreshAll();
     };
     const heading = (name) => new import_obsidian.Setting(containerEl).setName(name).setHeading();
     const num = (setting, key, lo, hi, isInt) => setting.addText((t) => t.setValue(String(S[key])).onChange(async (v) => {
@@ -19,7 +21,7 @@ var LogicGraphSettingTab = class extends import_obsidian.PluginSettingTab {
       S[key] = isInt ? Math.round(x) : x;
       await save();
     }));
-    containerEl.createEl("p", { text: "Changes apply to blocks rendered after you save (reopen the note or switch view to refresh). Add @help to a logic block for a reference of everything." });
+    containerEl.createEl("p", { text: `Logic Graph v${P.manifest.version}. Changes apply immediately to open notes. Add @help to a logic block for a full reference.` });
     heading("Limits");
     num(
       new import_obsidian.Setting(containerEl).setName("Max inputs at a time").setDesc(`Circuits with more inputs show an error. 1 to ${HARD_MAX_INPUTS}. Truth tables, Karnaugh maps and simplification are only available up to ${ANALYSIS_MAX_INPUTS} inputs (2^n rows).`),
@@ -93,36 +95,16 @@ var LogicGraphSettingTab = class extends import_obsidian.PluginSettingTab {
     });
     this.displayImport(containerEl, save);
   }
-  // Image import: the zone below the dropdown changes with the provider
   displayImport(containerEl, save) {
     const P = this.plugin, S = P.settings;
     new import_obsidian.Setting(containerEl).setName("Import from image").setHeading();
-    containerEl.createEl("p", { cls: "lg-wip-banner", text: 'Under construction. Cloud providers are not available yet. The offline recognizer lives in the separate "Logic Graph - Image Import" extension.' });
-    const zone = containerEl.createDiv({ cls: "lg-import-zone" });
-    const renderZone = () => {
-      zone.empty();
-      const p = S.importProvider, info = PROVIDERS[p];
-      if (p === "local") {
-        const installed = !!(this.app.plugins && this.app.plugins.plugins && this.app.plugins.plugins[IMPORT_EXTENSION_ID]);
-        new import_obsidian.Setting(zone).setName("Local recognizer").setDesc(installed ? 'Extension installed and enabled. Use the command "Import circuit from image" (Ctrl/Cmd + P). Everything stays on your device.' : 'The "Logic Graph - Image Import" extension is not installed or not enabled. Copy its folder into .obsidian/plugins/ and enable it.');
-        return;
-      }
-      zone.addClass("lg-wip");
-      new import_obsidian.Setting(zone).setName(`${info.name}: API token`).setDesc("Unavailable for now.").addText((t) => {
-        t.inputEl.type = "password";
-        t.setPlaceholder(info.keyHint).setValue(S.keys[p] || "").setDisabled(true);
-      });
-      new import_obsidian.Setting(zone).setName(`${info.name}: model`).setDesc("Unavailable for now.").addText((t) => t.setPlaceholder(info.modelHint).setValue(S.models[p] || "").setDisabled(true));
-    };
-    new import_obsidian.Setting(containerEl).setName("Provider").setDesc("Choose where the picture is analysed.").addDropdown((d) => {
-      Object.keys(PROVIDERS).forEach((k) => d.addOption(k, PROVIDERS[k].name));
-      d.setValue(S.importProvider).onChange(async (v) => {
-        S.importProvider = v;
-        await save();
-        renderZone();
-      });
+    const installed = !!(this.app.plugins && this.app.plugins.plugins && this.app.plugins.plugins[IMPORT_EXTENSION_ID]);
+    containerEl.createEl("p", {
+      cls: "lg-note",
+      text: installed
+        ? 'The "Logic Graph - Image Import" extension is installed. Use the command "Import circuit from image" (Ctrl/Cmd + P) — everything stays on your device.'
+        : 'Image import is provided by the separate "Logic Graph - Image Import" extension. Copy its folder into .obsidian/plugins/ and enable it, then use the command "Import circuit from image".'
     });
-    containerEl.appendChild(zone);
-    renderZone();
   }
 };
+

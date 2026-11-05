@@ -1,5 +1,10 @@
-var circuitCost = (c) => ({ gates: c.gates.length, pins: c.gates.reduce((a, g) => a + g.ins.length, 0) });
-function reduceStructural(c) {
+// packages/logic-graph/src/core/reduce.js
+import { MAX_GATE_FANIN } from "constants.js";
+import { INVERTING } from "gates.js";
+import { INVERSE } from "gates.js";
+import { BASE } from "gates.js";
+export const circuitCost = (c) => ({ gates: c.gates.length, pins: c.gates.reduce((a, g) => a + g.ins.length, 0) });
+export function reduceStructural(c) {
   let gates = c.gates.map((g) => ({ type: g.type, ins: g.ins.slice(), out: g.out, line: 0 }));
   const isOut = new Set(c.outputs);
   const drv = () => {
@@ -151,7 +156,7 @@ function reduceStructural(c) {
   }
   return assemble(gates, c.inputs);
 }
-function verifyEquivalent(c, circuit, consts, all) {
+export function verifyEquivalent(c, circuit, consts, all) {
   consts = consts || {};
   const check = (ins, ref) => {
     const v = circuit ? evaluate(circuit, ins) : {};
@@ -177,7 +182,7 @@ function verifyEquivalent(c, circuit, consts, all) {
   }
   return "sampled";
 }
-function reduceCircuit(c, all, method) {
+export function reduceCircuit(c, all, method) {
   const cands = [];
   const add = (m) => {
     const r = m === "structural" ? { circuit: reduceStructural(c), consts: {} } : synthesize(c, all, m);
@@ -195,3 +200,4 @@ function reduceCircuit(c, all, method) {
   best.verified = verifyEquivalent(c, best.circuit, best.consts, all);
   return best;
 }
+
