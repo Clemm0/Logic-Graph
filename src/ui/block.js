@@ -1,4 +1,3 @@
-// packages/logic-graph/src/ui/block.js
 import { finishRenderMath } from "obsidian";
 import { ANALYSIS_MAX_INPUTS } from "../core/constants.js";
 import { parse } from "../core/parser.js";
@@ -21,7 +20,7 @@ export function renderBlock(src, el, plugin) {
   const wrap = h("div", "lg-wrap", el);
   let c;
   try {
-    c = parse(src, { maxInputs: S.maxInputs, maxGates: S.maxGates });
+    c = parse(src, { maxInputs: S.maxInputs, maxGates: S.maxGates, maxMuxInputs: S.maxMuxInputs });
   } catch (e) {
     h("div", "lg-error", wrap, e.message);
     return { dispose() {} };

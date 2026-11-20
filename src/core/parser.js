@@ -1,13 +1,7 @@
-// packages/logic-graph/src/core/parser.js
 import { 
-  TIMING_VIEWS, 
-  REDUCE_METHODS, 
-  DEFAULT_MAX_GATES, 
-  DEFAULT_MAX_INPUTS, 
-  ID_RE, 
-  MAX_GATE_FANIN, 
-  HARD_MAX_GATES, 
-  HARD_MAX_INPUTS 
+  TIMING_VIEWS, REDUCE_METHODS, DEFAULT_MAX_GATES, DEFAULT_MAX_INPUTS, 
+  ID_RE, MAX_GATE_FANIN, HARD_MAX_GATES, HARD_MAX_INPUTS, 
+  DEFAULT_MAX_MUX_INPUTS, HARD_MAX_MUX_INPUTS 
 } from "./constants.js";
 import { GATES } from "./gates.js";
 
@@ -97,7 +91,12 @@ export function assemble(gates, inputs) {
 }
 
 export function parse(src, limits) {
-  limits = Object.assign({ maxInputs: DEFAULT_MAX_INPUTS, maxGates: DEFAULT_MAX_GATES }, limits);
+  limits = Object.assign({ 
+    maxInputs: DEFAULT_MAX_INPUTS, 
+    maxGates: DEFAULT_MAX_GATES,
+    maxMuxInputs: DEFAULT_MAX_MUX_INPUTS 
+  }, limits);
+  
   const gates = [];
   const driver = {};
   const opts = { hide: new Set(), show: new Set(), simplify: null, bubbles: null, delay: null, compact: null, timing: null, help: false };
@@ -111,24 +110,41 @@ export function parse(src, limits) {
       return;
     }
     
-    // Regex updated to be more forgiving of spaces
-    const m = line.match(/^\(([^)]*)\)\s*([A-Za-z]+)\s*\(([^)]*)\)$/);
+    const m = line.match(/^\(([^)]*)\)\s*([A-Za-z&|^!~]+)\s*\(([^)]*)\)$/);
     if (!m) throw new Error(`Line ${n}: expected "(inputs) GATE (output)"`);
     
-    // Robust parsing for inputs and outputs
-    const ins = m[1].split(/[,\s]+/).map(x => x.trim()).filter(Boolean);
-    const outs = m[3].split(/[,\s]+/).map(x => x.trim()).filter(Boolean);
+    const ins = m[1].split(/[,\s]+/).map((x) => x.trim()).filter(Boolean);
+    const outs = m[3].split(/[,\s]+/).map((x) => x.trim()).filter(Boolean);
     
-    // Robust parsing for gate type (handles "and", "AND", " aNd ")
-    const type = m[2].toUpperCase().trim();
+    let rawType = m[2].toUpperCase().trim();
+    const ALIASES = { 
+      "&": "AND", "&&": "AND", 
+      "|": "OR", "||": "OR", 
+      "^": "XOR", 
+      "!": "NOT", "~": "NOT", 
+      "MULTIPLEXER": "MUX", "MUX": "MUX" 
+    };
+    const type = ALIASES[rawType] || rawType;
     const spec = GATES[type];
-    
+
     if (!spec) throw new Error(`Line ${n}: unknown gate "${m[2]}". Available: ${Object.keys(GATES).join(", ")}`);
     if (outs.length !== 1) throw new Error(`Line ${n}: a gate needs exactly one output signal`);
     if (ins.length < spec.min) throw new Error(`Line ${n}: ${type} needs at least ${spec.min} input(s)`);
-    if (spec.max && ins.length > spec.max) throw new Error(`Line ${n}: ${type} takes exactly ${spec.max} input`);
-    if (ins.length > MAX_GATE_FANIN) throw new Error(`Line ${n}: at most ${MAX_GATE_FANIN} inputs per gate`);
+    if (spec.max && ins.length > spec.max) throw new Error(`Line ${n}: ${type} takes at most ${spec.max} inputs`);
     
+    if (type === "MUX") {
+      if (ins.length > limits.maxMuxInputs) {
+        throw new Error(`Line ${n}: MUX takes at most ${limits.maxMuxInputs} inputs. (Raise "Max MUX inputs" in settings, up to ${HARD_MAX_MUX_INPUTS})`);
+      }
+      let k = 1;
+      while ((1 << k) + k < ins.length) k++;
+      if ((1 << k) + k !== ins.length) {
+        throw new Error(`Line ${n}: MUX requires a number of inputs equal to 2^sel + sel (e.g., 3, 6, 11, 20). Got ${ins.length}.`);
+      }
+    } else if (ins.length > MAX_GATE_FANIN) {
+      throw new Error(`Line ${n}: at most ${MAX_GATE_FANIN} inputs per gate`);
+    }
+
     for (const x of [...ins, ...outs]) {
       if (!ID_RE.test(x)) throw new Error(`Line ${n}: invalid signal name "${x}"`);
     }
