@@ -1,0 +1,41 @@
+name: Attach Assets to Release
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Auto-update Manifest Version
+        run: |
+          TAG_VERSION=${{ github.ref_name }}
+          if [ "$TAG_VERSION" = "main" ]; then TAG_VERSION="1.2.0"; fi
+          MANIFEST_PATH="manifest.json" 
+          node -e "const fs = require('fs'); const m = JSON.parse(fs.readFileSync('$MANIFEST_PATH', 'utf8')); m.version = '$TAG_VERSION'; fs.writeFileSync('$MANIFEST_PATH', JSON.stringify(m, null, 2));"
+          
+      - name: Get Tag Message
+        id: tag_message
+        run: |
+          TAG_MSG=$(git tag -l --format='%(contents)' ${{ github.ref_name }})
+          echo "TAG_MSG<<EOF" >> $GITHUB_ENV
+          echo "$TAG_MSG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name == 'main' && '1.2.0' || github.ref_name }}
+          body: ${{ env.TAG_MSG }}
+          draft: true
+          files: |
+            **/main.js
+            **/manifest.json
+            **/styles.css
