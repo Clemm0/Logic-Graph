@@ -1,0 +1,17 @@
+{
+  "name": "logic-graph",
+  "version": "1.1.0",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production"
+  },
+  "devDependencies": {
+    "builtin-modules": "^5.5.0",
+    "esbuild": "^0.19.12",
+    "obsidian": "^1.14.4"
+  },
+  "description": "",
+  "main": "main.js",
+  "keywords": [],
+  "type": "commonjs"
+}

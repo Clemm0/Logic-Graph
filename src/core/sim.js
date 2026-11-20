@@ -1,0 +1,101 @@
+// packages/logic-graph/src/core/sim.js
+import { GATES } from "./gates.js";
+
+export function evaluate(c, inputVals) {
+  const v = Object.assign({}, inputVals);
+  c.order.forEach((g) => {
+    v[g.out] = +GATES[g.type].fn(g.ins.map((x) => !!v[x]));
+  });
+  return v;
+}
+
+// exerciseMode: if true, it will randomly set some outputs to -1 (Don't Care)
+// so the user can practice filling them in.
+export function truthTable(c, exerciseMode = false) {
+  const n = c.inputs.length;
+  const rows = [];
+  for (let i = 0; i < 1 << n; i++) {
+    const ins = {};
+    c.inputs.forEach((x, k) => {
+      ins[x] = i >> n - 1 - k & 1;
+    });
+    const row = evaluate(c, ins);
+    
+    if (exerciseMode) {
+      c.outputs.forEach(o => {
+        if (Math.random() < 0.15) row[o] = -1; // 15% chance to hide a cell
+      });
+    }
+    
+    rows.push(row);
+  }
+  return rows;
+}
+
+export function createSim(c, getDelay, onChange, onWork) {
+  const zero = {};
+  c.inputs.forEach((n) => {
+    zero[n] = 0;
+  });
+  const vals = evaluate(c, zero);
+  const timers = /* @__PURE__ */ new Map();
+  const consumers = {};
+  let disposed = false;
+  c.gates.forEach((g) => g.ins.forEach((n) => {
+    (consumers[n] = consumers[n] || []).push(g);
+  }));
+  const work = (g) => {
+    if (!disposed && onWork) onWork(g);
+  };
+  function set(sig, v) {
+    if (disposed || vals[sig] === v) return;
+    vals[sig] = v;
+    onChange(sig, v);
+    (consumers[sig] || []).forEach(reeval);
+  }
+  function reeval(g) {
+    if (disposed) return;
+    const target = +GATES[g.type].fn(g.ins.map((x) => !!vals[x]));
+    const pend = timers.get(g);
+    if (pend) {
+      clearTimeout(pend.h);
+      timers.delete(g);
+    }
+    if (target === vals[g.out]) {
+      if (pend) work(g);
+      return;
+    }
+    const d = getDelay();
+    if (!(d > 0)) {
+      set(g.out, target);
+      if (pend) work(g);
+      return;
+    }
+    const h2 = setTimeout(() => {
+      timers.delete(g);
+      if (disposed) return;
+      set(g.out, target);
+      work(g);
+    }, d * 1e3);
+    timers.set(g, { h: h2, target });
+    work(g);
+  }
+  return {
+    vals,
+    setInputs(patch) {
+      Object.keys(patch).forEach((n) => set(n, patch[n]));
+    },
+    pending() {
+      return timers.size;
+    },
+    working(g) {
+      const p = timers.get(g);
+      return p ? p.target : null;
+    },
+    dispose() {
+      disposed = true;
+      timers.forEach((p) => clearTimeout(p.h));
+      timers.clear();
+    }
+  };
+}
